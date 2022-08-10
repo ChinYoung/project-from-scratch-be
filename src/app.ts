@@ -3,19 +3,17 @@ import Koa, { Context, HttpError } from "koa";
 import { router } from "./V1";
 import { DB } from "./utils/database";
 import { initDataBase } from "./model/initiate";
+import { sign } from "./middleware/sign";
 
-async function startServer() {
+const app = new Koa();
+app.use(koaBody())
+app.use(sign)
+app.use(router.routes())
+app.listen(5000, async () => {
   const dbConnection = await initDataBase()
-  const app = new Koa();
-  app.use(koaBody())
-  app.use(router.routes())
-  app.listen(5000, () => {
-    console.log('listening to 5000');
-  });
-  app.on('error', (err:Error) => {
-    console.log(err.message);
-    console.log(err.stack);
-  })
-}
-
-startServer()
+  console.log('listening to 5000');
+});
+app.on('error', (err:Error) => {
+  console.log(err.message);
+  console.log(err.stack);
+})

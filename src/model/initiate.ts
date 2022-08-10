@@ -15,10 +15,13 @@ export async function initDataBase() {
       tableName: 'Account',
       paranoid: true,
       sequelize,
+      indexes: [
+        {unique: true, fields: ['account_id']},
+        {unique: true, fields: ['account_name']}
+      ]
     }
   )
   await sequelize.sync()
   console.log('database initiated');
   return sequelize
-  
 }
