@@ -13,7 +13,11 @@ app.listen(5000, async () => {
   const dbConnection = await initDataBase()
   console.log('listening to 5000');
 });
-app.on('error', (err:Error) => {
+app.on('error', (err:Error, ctx:Context) => {
   console.log(err.message);
   console.log(err.stack);
+  ctx.body = {
+    code: 99999,
+    message: 'unknown error'
+  }
 })

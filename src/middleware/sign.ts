@@ -6,12 +6,12 @@ import {TokenExpiredError} from "jsonwebtoken";
 const jwtExceptions: RegExp[] = config.get('jwt.exception')
 const jwtSecret:string = config.get('jwt.secret')
 const basePath:string = config.get('base-path')
-export function sign(ctx:Context, next: Next) {
+export async function sign(ctx:Context, next: Next) {
   const {URL:{pathname}} = ctx
   const current = pathname.replace(basePath, '')
   if (jwtExceptions.find(patten => patten.test(current))) {
     console.log('match');
-    next()
+    await next()
     return
   }
   const token = ctx.headers.authorization.replace('Bearer ', '')
@@ -19,7 +19,7 @@ export function sign(ctx:Context, next: Next) {
     const payload: {account:string} = JWT.verify(token, jwtSecret)
     const {account} = payload
     ctx.account = account
-    next()
+    await next()
   } catch(error) {
     ctx.response.status = 403
     if (error instanceof TokenExpiredError) {
