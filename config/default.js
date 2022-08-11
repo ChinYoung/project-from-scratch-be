@@ -8,7 +8,10 @@ module.exports = {
     database: 'libra',
   },
   'base-path': '/libra',
-  'jwt-exception': [
-    /^\/account$/,
-  ],
+  jwt: {
+    secret: 'jwt-secret',
+    exception: [
+      /^\/account$/,
+    ],
+  },
 };
