@@ -14,4 +14,7 @@ module.exports = {
       /^\/account$/,
     ],
   },
+  redis: {
+    password: 'libraredis',
+  },
 };

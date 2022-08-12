@@ -2,6 +2,7 @@ import { Context, Next } from "koa";
 import config from "config";
 import JWT from "jsonwebtoken";
 import {TokenExpiredError} from "jsonwebtoken";
+import { Redis } from "../utils/database";
 
 const jwtExceptions: RegExp[] = config.get('jwt.exception')
 const jwtSecret:string = config.get('jwt.secret')
@@ -18,6 +19,12 @@ export async function sign(ctx:Context, next: Next) {
   try {
     const payload: {account:string} = JWT.verify(token, jwtSecret)
     const {account} = payload
+    const redis = new Redis()
+    await redis.init()
+    const cachedToken = await redis.current.get(`jwt:token:${account}`)
+    if (cachedToken !== token) {
+      throw new Error('fake token')
+    }
     ctx.account = account
     await next()
   } catch(error) {

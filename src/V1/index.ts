@@ -3,6 +3,7 @@ import Router from "koa-router";
 import JWT from "jsonwebtoken";
 import config from "config";
 import { Account } from "../model/mAccount";
+import { Redis } from "../utils/database";
 
 export const router = new Router({prefix: '/libra'})
 router.post('/account', async (ctx:Context, next:Next) => {
@@ -25,6 +26,9 @@ router.post('/account', async (ctx:Context, next:Next) => {
   )
   ctx.body = token
   ctx.response.status = 200
+  const redis = new Redis()
+  await redis.init()
+  redis.current.set(`jwt:token:${account}`, token)
   await next()
 })
 
