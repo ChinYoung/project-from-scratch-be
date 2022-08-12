@@ -8,7 +8,7 @@ module.exports = {
     database: 'libra',
   },
   'base-path': '/libra',
-  port: 5001,
+  port: 5000,
   jwt: {
     secret: 'jwt-secret',
     exception: [
