@@ -8,7 +8,10 @@ module.exports = {
     database: 'libra',
   },
   'base-path': '/libra',
-  port: 5000,
+  port: 5009,
+  sign: {
+    secret: 'secret',
+  },
   jwt: {
     secret: 'jwt-secret',
     exception: [
@@ -17,5 +20,8 @@ module.exports = {
   },
   redis: {
     password: 'libraredis',
+  },
+  nonce: {
+    timeout: 15,
   },
 };

@@ -1,9 +1,7 @@
 import {Sequelize, Options} from "sequelize"
 import config from "config";
 import { createClient, RedisFunctions, RedisModules, RedisScripts, RedisClientType } from "redis";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import { tzDayjs } from "./time";
 
 @singleton
 class Conn {
@@ -63,10 +61,6 @@ function singleton<T extends new (...args:any[]) => any>(Cls: T) {
   })
   return wrapped
 }
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
-const tzDayjs = (time: string | number | void) => time ? dayjs(time) : dayjs()
 
 export const DB = Conn
 export const Redis = RedisProxy
