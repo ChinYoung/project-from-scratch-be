@@ -46,6 +46,7 @@ export async function sign(ctx:Context, next: Next) {
     ctx.account = account
     await next()
   } catch(error) {
+    console.log("🚀 ~ file: sign.ts ~ line 49 ~ sign ~ error", error)
     ctx.response.status = 403
     if (error instanceof TokenExpiredError) {
       ctx.body = {

@@ -23,7 +23,7 @@ export function initUser (sequelize) {
   User.init(
     {
       id: {type: INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true},
-      user_id: {type: new STRING(32), allowNull: false},
+      user_id: {type: new STRING(36), allowNull: false},
       name: {type: new STRING(128), allowNull: false},
       gender: {type: STRING, allowNull: false},
       age: {type: INTEGER.UNSIGNED, allowNull: false},
