@@ -34,8 +34,10 @@ router.post('/account', async (ctx:Context, next:Next) => {
 })
 
 router.get('/user', async (ctx:Context, next:Next) => {
+  const {pageSize, pageNumber}:{pageSize: number, pageNumber: number} = ctx.request.query
   const userList = await User.findAndCountAll({
-    limit: 10,
+    limit: Math.abs(pageSize),
+    offset: Math.abs(pageNumber) * Math.abs(pageSize)
   })
   const {count, rows} = userList
   ctx.body = {
