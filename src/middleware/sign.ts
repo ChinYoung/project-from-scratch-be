@@ -27,10 +27,6 @@ export async function sign(ctx:Context, next: Next) {
     token = token ? token : 'Bearer'
     // 签名校验
     const requestParams: inputSigParams = ctx.request.method.toLowerCase() === 'post' ? ctx.request.body : ctx.request.query
-    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ ctx.request.method", ctx.request.method)
-    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ requestParams", requestParams)
-    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ ctx.request.body", ctx.request.body)
-    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ ctx.request.query", ctx.request.query)
     await verifySig(requestParams, token)
     // exceptions
     if (jwtExceptions.find(patten => patten.test(current))) {
@@ -50,7 +46,6 @@ export async function sign(ctx:Context, next: Next) {
     ctx.account = account
     await next()
   } catch(error) {
-    console.log("🚀 ~ file: sign.ts ~ line 53 ~ sign ~ error", error)
     ctx.response.status = 403
     if (error instanceof TokenExpiredError) {
       ctx.body = {
@@ -95,7 +90,6 @@ async function verifySig(input: inputSigParams, secret: string) {
   // }
   // redis.current.set(nonceKey, nonce, {EX: parseInt(nonceTimeOut)})
   const sig = generateSig(input, secret)
-  console.log("🚀 ~ file: sign.ts ~ line 93 ~ verifySig ~ sig", sig)
   // 签名校验不通过
   if (inputSig !== sig) {
     throw new HttpException(10003, 'invalid request')
