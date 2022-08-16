@@ -5,8 +5,8 @@ const input = {
   // "account": "libra",
   // "password": "xxxxx",
   timestamp: parseInt(`${tzDayjs().valueOf() * 0.001}`),
-  nonce: parseInt(`${Math.random() * 10000}`)
+  nonce: `${parseInt(`${Math.random() * 10000}`)}`
 }
-const secret = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoibGlicmEiLCJpYXQiOjE2NjA2MzI1NDMsImV4cCI6MTY2MDYzNjE0M30.qpNVTp7qwMspQ9G7v_UJySmRqqjwbJ5pubfbXLDXIw0'
+const secret = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoibGlicmEiLCJpYXQiOjE2NjA2MzQ5MjgsImV4cCI6MTY2MDYzODUyOH0.pQDYUT8ho4fyKvS9u2HCatKemr05YDDym_u_j5QKLCA'
 const sig = generateSig(input, secret)
-console.log(`?timestamp=${input.timestamp}&nonce=${input.nonce}&sig=${sig}`);
+console.log(`?timestamp=${input.timestamp}&nonce=${input.nonce}&sig=${encodeURIComponent(sig)}`);

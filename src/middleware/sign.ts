@@ -50,6 +50,7 @@ export async function sign(ctx:Context, next: Next) {
     ctx.account = account
     await next()
   } catch(error) {
+    console.log("🚀 ~ file: sign.ts ~ line 53 ~ sign ~ error", error)
     ctx.response.status = 403
     if (error instanceof TokenExpiredError) {
       ctx.body = {
@@ -76,9 +77,6 @@ export async function sign(ctx:Context, next: Next) {
 
 async function verifySig(input: inputSigParams, secret: string) {
   const {sig: inputSig, timestamp, nonce} = input
-  console.log("🚀 ~ file: sign.ts ~ line 75 ~ verifySig ~ inputSig", inputSig)
-  console.log("🚀 ~ file: sign.ts ~ line 75 ~ verifySig ~ nonce", nonce)
-  console.log("🚀 ~ file: sign.ts ~ line 75 ~ verifySig ~ timestamp", timestamp)
   const nonceTimeOut = config.get('nonce.timeout')
   // 超时
   // FIXME: recover me
