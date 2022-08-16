@@ -23,9 +23,14 @@ export async function sign(ctx:Context, next: Next) {
   const redis = new Redis()
   await redis.init()
   try {
-    const token = ctx.headers.authorization.replace('Bearer ', '')
+    let token = ctx.headers.authorization.replace('Bearer', '').trim()
+    token = token ? token : 'Bearer'
     // 签名校验
-    const requestParams: inputSigParams = ctx.request.body || ctx.request.query
+    const requestParams: inputSigParams = ctx.request.method.toLowerCase() === 'post' ? ctx.request.body : ctx.request.query
+    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ ctx.request.method", ctx.request.method)
+    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ requestParams", requestParams)
+    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ ctx.request.body", ctx.request.body)
+    console.log("🚀 ~ file: sign.ts ~ line 30 ~ sign ~ ctx.request.query", ctx.request.query)
     await verifySig(requestParams, token)
     // exceptions
     if (jwtExceptions.find(patten => patten.test(current))) {
@@ -70,26 +75,27 @@ export async function sign(ctx:Context, next: Next) {
 
 
 async function verifySig(input: inputSigParams, secret: string) {
-  const testNonce = `${parseInt(`${Math.random() * 100000}`)}`
-  const {sig: inputSig = '', timestamp = parseInt(`${tzDayjs().valueOf() * 0.001}`), nonce = testNonce} = input
+  const {sig: inputSig, timestamp, nonce} = input
   console.log("🚀 ~ file: sign.ts ~ line 75 ~ verifySig ~ inputSig", inputSig)
   console.log("🚀 ~ file: sign.ts ~ line 75 ~ verifySig ~ nonce", nonce)
   console.log("🚀 ~ file: sign.ts ~ line 75 ~ verifySig ~ timestamp", timestamp)
   const nonceTimeOut = config.get('nonce.timeout')
   // 超时
-  const redis = new Redis()
-  await redis.init()
-  const now = tzDayjs().valueOf() * 0.001
-  if (now - timestamp > nonceTimeOut) {
-    throw new HttpException(10004, 'invalid request')
-  }
-  const nonceKey = `${timestamp}:${nonce}`
-  const nonceCache = await redis.current.get(nonceKey)
+  // FIXME: recover me
+  // const redis = new Redis()
+  // await redis.init()
+  // const now = tzDayjs().valueOf() * 0.001
+  // if (now - timestamp > nonceTimeOut) {
+  //   throw new HttpException(10004, 'invalid request')
+  // }
   // 重放
-  if (nonceCache) {
-    throw new HttpException(10005, 'invalid request')
-  }
-  redis.current.set(nonceKey, nonce, {EX: parseInt(nonceTimeOut)})
+  // FIXME: recover me
+  // const nonceKey = `${timestamp}:${nonce}`
+  // const nonceCache = await redis.current.get(nonceKey)
+  // if (nonceCache) {
+  //   throw new HttpException(10005, 'invalid request')
+  // }
+  // redis.current.set(nonceKey, nonce, {EX: parseInt(nonceTimeOut)})
   const sig = generateSig(input, secret)
   console.log("🚀 ~ file: sign.ts ~ line 93 ~ verifySig ~ sig", sig)
   // 签名校验不通过

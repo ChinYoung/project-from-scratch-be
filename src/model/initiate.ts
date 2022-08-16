@@ -1,26 +1,12 @@
 import { INTEGER, STRING } from "sequelize";
 import { DB } from "../utils/database";
-import { Account } from "./mAccount";
+import { initAccount } from "./mAccount";
+import { initUser } from "./mUser";
 
 export async function initDataBase() {
   const sequelize = new DB().current
-  Account.init(
-    {
-      account_id: {type: new STRING(32), allowNull: false},
-      account_name: {type: new STRING(128), allowNull: false},
-      id: {type: INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true},
-      password:{type: new STRING(32), allowNull: false}
-    },
-    {
-      tableName: 'Account',
-      paranoid: true,
-      sequelize,
-      indexes: [
-        {unique: true, fields: ['account_id']},
-        {unique: true, fields: ['account_name']}
-      ]
-    }
-  )
+  initAccount(sequelize)
+  initUser(sequelize)
   await sequelize.sync()
   console.log('database initiated');
   return sequelize

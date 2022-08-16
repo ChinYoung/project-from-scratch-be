@@ -3,7 +3,6 @@ import {createHash} from "crypto";
 
 export function generateSig(input:Object, secret: string):string {
   const str = formatObject(input)
-  console.log("🚀 ~ file: sign.ts ~ line 6 ~ generateSig ~ str", str)
   const md5 = createHash('md5')
   md5.update(`${str}${secret}`)
   return md5.digest('base64')

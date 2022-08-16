@@ -22,6 +22,6 @@ module.exports = {
     password: 'libraredis',
   },
   nonce: {
-    timeout: 15,
+    timeout: 1500,
   },
 };
