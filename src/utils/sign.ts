@@ -19,9 +19,6 @@ function formatObject(input:Object):string {
       if (typeof value === 'object') {
         return `${key}=${formatObject(value)}`
       }
-      if (typeof value === 'string') {
-        return `${key}="${value}"`
-      }
       return `${key}=${value}`
     })
     .join('&')
@@ -36,9 +33,6 @@ function formatArray(input: any[]):string {
       }
       if (typeof item === 'object') {
         return formatObject(item)
-      }
-      if (typeof item === 'string') {
-        return `"${item}"`
       }
       return item
     })
