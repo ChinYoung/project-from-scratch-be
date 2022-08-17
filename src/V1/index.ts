@@ -25,7 +25,11 @@ router.post('/account', async (ctx:Context, next:Next) => {
     jwtSecret,
     {expiresIn: 60 * 60}
   )
-  ctx.body = token
+  ctx.body = {
+    code: 0,
+    message: 'success',
+    data: {token}
+  }
   ctx.response.status = 200
   const redis = new Redis()
   await redis.init()
