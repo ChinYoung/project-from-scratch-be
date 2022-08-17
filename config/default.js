@@ -8,7 +8,7 @@ module.exports = {
     database: 'libra',
   },
   'base-path': '/libra',
-  port: 5009,
+  port: 5000,
   sign: {
     secret: 'secret',
   },

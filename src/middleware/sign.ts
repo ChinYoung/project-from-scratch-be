@@ -23,7 +23,7 @@ export async function sign(ctx:Context, next: Next) {
   const redis = new Redis()
   await redis.init()
   try {
-    let token = ctx.headers.authorization.replace('Bearer', '').trim()
+    let token = ctx.headers?.authorization?.replace('Bearer', '').trim()
     token = token ? token : 'Bearer'
     // 签名校验
     const requestParams: inputSigParams = ctx.request.method.toLowerCase() === 'post' ? ctx.request.body : ctx.request.query
