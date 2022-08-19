@@ -19,10 +19,6 @@ app.listen(port,
   },
 );
 app.on('error', (err:Error, ctx:Context) => {
-  console.log(err.message);
-  console.log(err.stack);
-  ctx.body = {
-    code: 99999,
-    message: 'unknown error'
-  }
+  console.log("🚀 ~ file: app.ts ~ line 23 ~ app.on ~ err.message", err.message)
+  console.log("🚀 ~ file: app.ts ~ line 24 ~ app.on ~ err.stack", err.stack)
 })

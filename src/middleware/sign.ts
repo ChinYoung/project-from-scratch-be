@@ -47,8 +47,8 @@ export async function sign(ctx:Context, next: Next) {
     await next()
   } catch(error) {
     console.log("🚀 ~ file: sign.ts ~ line 49 ~ sign ~ error", error)
-    ctx.response.status = 403
     if (error instanceof TokenExpiredError) {
+      ctx.response.status = 403
       ctx.body = {
         code: 10002,
         message: 'token expired'
@@ -56,6 +56,7 @@ export async function sign(ctx:Context, next: Next) {
       return
     }
     if (error instanceof HttpException) {
+      ctx.response.status = 200
       const httpError = error as HttpException
       ctx.body = {
         code: httpError.code,
@@ -63,10 +64,11 @@ export async function sign(ctx:Context, next: Next) {
       }
       return
     }
-    ctx.body = {
-      code: 10001,
-      message: 'invalid request'
-    }
+    throw error
+    // ctx.body = {
+    //   code: 10001,
+    //   message: 'invalid request'
+    // }
   }
 }
 
@@ -91,6 +93,9 @@ async function verifySig(input: inputSigParams, secret: string) {
   // }
   // redis.current.set(nonceKey, nonce, {EX: parseInt(nonceTimeOut)})
   const sig = generateSig(input, secret)
+  console.log(input)
+  console.log(secret)
+  console.log(sig)
   // 签名校验不通过
   if (inputSig !== sig) {
     throw new HttpException(10003, 'invalid request')

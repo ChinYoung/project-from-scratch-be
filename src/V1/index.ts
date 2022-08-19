@@ -5,6 +5,9 @@ import config from "config";
 import { Account } from "../model/mAccount";
 import { Redis } from "../utils/database";
 import { User } from "../model/mUser";
+import { v4 as uuidV4 } from 'uuid';
+import { tUser } from "./user";
+import { HttpException } from "../utils/HttpException";
 
 export const router = new Router({prefix: '/libra'})
 router.post('/account', async (ctx:Context, next:Next) => {
@@ -53,6 +56,35 @@ router.get('/user', async (ctx:Context, next:Next) => {
     }
   }
   await next()
+})
+
+
+router.post('/user', async (ctx:Context, next: Next) => {
+  const {newUser} = ctx.request.body as { newUser:tUser}
+  console.log("🚀 ~ file: index.ts ~ line 63 ~ router.post ~ newUser", newUser)
+  try {
+    // throw new HttpException(120, 'test error')
+    const newUserId = uuidV4()
+    await User.create({
+      ...newUser,
+      user_id: newUserId
+    })
+    ctx.body = {
+      code: 0,
+      message: 'success',
+      data: {
+        userId: newUserId
+      }
+    }
+  } catch(error) {
+    console.table({
+      error: error.constructor?.name || 'Error',
+      method: 'post',
+      path: '/user',
+      message: error.message
+    });
+    throw new HttpException(10006, 'insert error')
+  }
 })
 
 export default {
