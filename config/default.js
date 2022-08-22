@@ -24,4 +24,9 @@ module.exports = {
   nonce: {
     timeout: 1500,
   },
+  SSO: {
+    client_id: 'ad1304e89d9bb4b22337',
+    client_secret: '89b6ce72365c4c342c30ee1484f701682c742e9a',
+    redirect_uri: 'https://www.rakki.fun:30789/libra/oauthcb',
+  },
 };

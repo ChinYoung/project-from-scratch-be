@@ -8,6 +8,7 @@ import { User } from "../model/mUser";
 import { v4 as uuidV4 } from 'uuid';
 import { tUser } from "./user";
 import { HttpException } from "../utils/HttpException";
+import axios from "axios";
 
 export const router = new Router({prefix: '/libra'})
 router.post('/account', async (ctx:Context, next:Next) => {
@@ -86,6 +87,17 @@ router.post('/user', async (ctx:Context, next: Next) => {
     throw new HttpException(10006, 'insert error')
   }
 })
+
+router.get('/oauthcb', async (ctx:Context, next:Next)) {
+  const {code, state} = ctx.request.query as {code:string, state: string}
+  const res = await axios.post('https://github.com/login/oauth/access_token', {
+    client_id: config.get('SSO.client_id'),
+    client_secret: config.get('SSO.client_secret'),
+    redirect_uri: config.get('SSO.redirect_uri'),
+    code
+  })
+  console.log("🚀 ~ file: index.ts ~ line 99 ~ router.get ~ res", res)
+}
 
 export default {
   routerV1: router
