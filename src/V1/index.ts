@@ -88,16 +88,57 @@ router.post('/user', async (ctx:Context, next: Next) => {
   }
 })
 
-router.get('/oauthcb', async (ctx:Context, next:Next)) {
+router.get('/oauthcb', async (ctx:Context, next:Next)=> {
   const {code, state} = ctx.request.query as {code:string, state: string}
   const res = await axios.post('https://github.com/login/oauth/access_token', {
     client_id: config.get('SSO.client_id'),
     client_secret: config.get('SSO.client_secret'),
     redirect_uri: config.get('SSO.redirect_uri'),
     code
+  },{
+    headers: {
+      Accept: 'application/json'
+    }
   })
-  console.log("🚀 ~ file: index.ts ~ line 99 ~ router.get ~ res", res)
-}
+  const {access_token, token_type} = res.data as {access_token:string, token_type:string}
+  const userInfoRes = await axios.get('https://api.github.com/user', {
+    headers: {
+      Authorization: `Bearer ${access_token}`
+    }
+  })
+  const {data: userinfo, data:{id}} = userInfoRes as {data:{id:number}}
+  console.log("🚀 ~ file: index.ts ~ line 110 ~ router.get ~ userinfo", userinfo)
+  const redis = new Redis()
+  await redis.init()
+  redis.current.set(`${id}:access_token`, access_token, {EX: 60*60})
+  redis.current.set(`${id}:user_info`, JSON.stringify(userinfo), {EX: 60*60})
+  // TODO:get local username
+  const count = await Account.count({
+    where: {github_id: id} as {github_id: number}
+  })
+  if (!count) {
+    ctx.body = {
+      code: 20001,
+      message: 'invalid account or password'
+    }
+    return
+  }
+  const jwtSecret:string = config.get('jwt.secret')
+  const token = JWT.sign(
+    {id},
+    jwtSecret,
+    {expiresIn: 60 * 60}
+  )
+  // TODO:redirect to /home
+  ctx.body = {
+    code: 0,
+    message: 'success',
+    data: {token}
+  }
+  ctx.response.status = 200
+  redis.current.set(`jwt:token:${id}`, token)
+  await next()
+})
 
 export default {
   routerV1: router

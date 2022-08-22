@@ -5,6 +5,7 @@ export class Account extends Model<InferAttributes<Account>, InferCreationAttrib
   declare account_id: CreationOptional<string>;
   declare account_name: string;
   declare password: string;
+  declare github_id: CreationOptional<number>;
 }
 
 export function initAccount(sequelize) {
@@ -13,7 +14,8 @@ export function initAccount(sequelize) {
       account_id: {type: new STRING(32), allowNull: false},
       account_name: {type: new STRING(128), allowNull: false},
       id: {type: INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true},
-      password:{type: new STRING(32), allowNull: false}
+      password:{type: new STRING(32), allowNull: false},
+      github_id: {type: INTEGER.UNSIGNED, allowNull: false}
     },
     {
       tableName: 'Account',

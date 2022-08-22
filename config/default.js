@@ -11,6 +11,9 @@ module.exports = {
   port: 5000,
   sign: {
     secret: 'secret',
+    exception: [
+      /^\/oauthcb$/,
+    ],
   },
   jwt: {
     secret: 'jwt-secret',

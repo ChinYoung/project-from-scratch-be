@@ -8,6 +8,7 @@ import { tzDayjs } from "../utils/time";
 import { HttpException } from "../utils/HttpException";
 
 const jwtExceptions: RegExp[] = config.get('jwt.exception')
+const signExceptions: RegExp[] = config.get('sign.exception')
 const jwtSecret:string = config.get('jwt.secret')
 const basePath:string = config.get('base-path')
 
@@ -23,6 +24,12 @@ export async function sign(ctx:Context, next: Next) {
   const redis = new Redis()
   await redis.init()
   try {
+    // exceptions
+    if (signExceptions.find(patten => patten.test(current))) {
+      console.log('match signExceptions');
+      await next()
+      return
+    }
     let token = ctx.headers?.authorization?.replace('Bearer', '').trim()
     token = token ? token : 'Bearer'
     // 签名校验
@@ -30,7 +37,7 @@ export async function sign(ctx:Context, next: Next) {
     await verifySig(requestParams, token)
     // exceptions
     if (jwtExceptions.find(patten => patten.test(current))) {
-      console.log('match');
+      console.log('match jwtExceptions');
       await next()
       return
     }
@@ -41,7 +48,7 @@ export async function sign(ctx:Context, next: Next) {
     // 校验是否是签发中 token
     const cachedToken = await redis.current.get(`jwt:token:${account}`)
     if (cachedToken !== token) {
-      throw new Error('fake token')
+      throw new HttpException(10007, 'invalid request')
     }
     ctx.account = account
     await next()
