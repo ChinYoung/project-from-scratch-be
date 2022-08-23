@@ -83,6 +83,9 @@ export async function sign(ctx:Context, next: Next) {
 
 
 async function verifySig(input: inputSigParams, secret: string) {
+  console.log('signing ================================================')
+  console.log("🚀 ~ file: sign.ts ~ line 86 ~ verifySig ~ input", input)
+  console.log("🚀 ~ file: sign.ts ~ line 108 ~ verifySig ~ secret", secret)
   const {sig: inputSig, timestamp, nonce} = input
   const nonceTimeOut = config.get('nonce.timeout')
   // 超时
@@ -102,9 +105,7 @@ async function verifySig(input: inputSigParams, secret: string) {
   // }
   // redis.current.set(nonceKey, nonce, {EX: parseInt(nonceTimeOut)})
   const sig = generateSig(input, secret)
-  console.log(input)
-  console.log(secret)
-  console.log(sig)
+  console.log("🚀 ~ file: sign.ts ~ line 110 ~ verifySig ~ sig", sig)
   // 签名校验不通过
   if (inputSig !== sig) {
     throw new HttpException(10003, 'invalid request')
