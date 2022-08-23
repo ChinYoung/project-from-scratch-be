@@ -34,6 +34,8 @@ export async function sign(ctx:Context, next: Next) {
     token = token ? token : 'Bearer'
     // 签名校验
     const requestParams: inputSigParams = ctx.request.method.toLowerCase() === 'post' ? ctx.request.body : ctx.request.query
+    console.log("🚀 ~ file: sign.ts ~ line 37 ~ sign ~ ctx.request.query", ctx.request.query)
+    console.log("🚀 ~ file: sign.ts ~ line 37 ~ sign ~ ctx.request.body", ctx.request.body)
     await verifySig(requestParams, token)
     // exceptions
     if (jwtExceptions.find(patten => patten.test(current))) {

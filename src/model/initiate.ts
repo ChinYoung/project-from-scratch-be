@@ -7,8 +7,8 @@ export async function initDataBase() {
   const sequelize = new DB().current
   initAccount(sequelize)
   initUser(sequelize)
-  // await sequelize.sync()
-  await sequelize.sync({force: true})
+  await sequelize.sync()
+  // await sequelize.sync({force: true})
   console.log('database initiated');
   return sequelize
 }
