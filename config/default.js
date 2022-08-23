@@ -7,6 +7,7 @@ module.exports = {
     dialect: 'mysql',
     database: 'libra',
   },
+  'front-end-host': 'https://www.rakki.fun:30689',
   'base-path': '/libra',
   port: 5000,
   sign: {

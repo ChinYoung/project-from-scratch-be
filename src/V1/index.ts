@@ -106,37 +106,41 @@ router.get('/oauthcb', async (ctx:Context, next:Next)=> {
       Authorization: `Bearer ${access_token}`
     }
   })
-  const {data: userinfo, data:{id}} = userInfoRes as {data:{id:number}}
+  const {data: userinfo, data:{id, login, avatar_url}} = userInfoRes as {data:{id:number, login: string, avatar_url: string}}
   console.log("🚀 ~ file: index.ts ~ line 110 ~ router.get ~ userinfo", userinfo)
   const redis = new Redis()
   await redis.init()
   redis.current.set(`${id}:access_token`, access_token, {EX: 60*60})
   redis.current.set(`${id}:user_info`, JSON.stringify(userinfo), {EX: 60*60})
-  // TODO:get local username
-  const count = await Account.count({
+  const account = await Account.findOne({
     where: {github_id: id} as {github_id: number}
   })
-  if (!count) {
+  if (!account) {
     ctx.body = {
       code: 20001,
       message: 'invalid account or password'
     }
     return
   }
+  const {account_id, account_name, avatar, id:localId} = account
+  console.log("🚀 ~ file: index.ts ~ line 127 ~ router.get ~ account_id", account_id)
+  console.log("🚀 ~ file: index.ts ~ line 127 ~ router.get ~ account_name", account_name)
+  console.log("🚀 ~ file: index.ts ~ line 127 ~ router.get ~ avatar", avatar)
+  if (!(account_name.trim() && account_id.trim() && avatar.trim())) {
+    account.account_id = uuidV4()
+    account.account_name = login
+    account.avatar = avatar_url
+    await account.save()
+  }
   const jwtSecret:string = config.get('jwt.secret')
+  const userData = {id: account.account_id, name: account.account_name, avatar: account.avatar}
   const token = JWT.sign(
-    {id},
+    userData,
     jwtSecret,
     {expiresIn: 60 * 60}
   )
-  // TODO:redirect to /home
-  ctx.body = {
-    code: 0,
-    message: 'success',
-    data: {token}
-  }
-  ctx.response.status = 200
   redis.current.set(`jwt:token:${id}`, token)
+  ctx.redirect(`${config.get('front-end-host')}${config.get('base-path')}/?token=${token}`, )
   await next()
 })
 
