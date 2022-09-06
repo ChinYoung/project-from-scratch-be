@@ -1,7 +1,15 @@
-import { Model, CreationOptional, InferAttributes, InferCreationAttributes, INTEGER, STRING } from 'sequelize';
-import { SequelizeInstance } from './initiate';
+import {
+  STRING,
+  INTEGER,
+  Model,
+  Sequelize,
+  CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+} from 'sequelize';
+import {} from '../../node_modules/sequelize/types/model';
 
-enum STATE {
+export enum TODO_STATE {
   CREATED = 1,
   DONE,
   EXPIRED,
@@ -10,13 +18,13 @@ export class TodoItem extends Model<InferAttributes<TodoItem>, InferCreationAttr
   declare id: CreationOptional<number>;
   declare todo_id: CreationOptional<string>;
   declare owner: string;
-  declare state: STATE;
+  declare state: TODO_STATE;
   declare content: string;
   declare start_time: CreationOptional<string>;
   declare end_time: CreationOptional<string>;
 }
 
-export function initTodoItem(sequelize: SequelizeInstance) {
+export function initTodoItem(sequelize: Sequelize) {
   TodoItem.init(
     {
       id: { type: INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },

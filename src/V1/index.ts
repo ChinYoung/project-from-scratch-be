@@ -9,6 +9,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { tUser } from './user';
 import { HttpException } from '../utils/HttpException';
 import axios from 'axios';
+import { TodoItem } from '../model/mTodoItem';
 
 export const router = new Router({ prefix: '/libra' });
 router.post('/account', async (ctx: Context, next: Next) => {
@@ -142,7 +143,23 @@ router.get('/oauthcb', async (ctx: Context, next: Next) => {
   await next();
 });
 
-router.get('/todo', async (ctx: Context, next: Next) => {});
+router.get('/todo', async (ctx: Context, next: Next) => {
+  const { pageSize, pageNumber } = ctx.request.query as { pageSize: string; pageNumber: string };
+  const todoItemRes = await TodoItem.findAndCountAll({
+    limit: Math.abs(parseInt(pageSize)),
+    offset: Math.abs(parseInt(pageNumber)) * Math.abs(parseInt(pageSize)),
+  });
+  const { count, rows } = todoItemRes;
+  ctx.body = {
+    code: 0,
+    message: 'success',
+    data: {
+      todoItems: rows,
+      total: count,
+    },
+  };
+  await next();
+});
 router.get('/todo/:id', async (ctx: Context, next: Next) => {});
 router.post('/todo', async (ctx: Context, next: Next) => {});
 router.delete('/todo/:id', async (ctx: Context, next: Next) => {});

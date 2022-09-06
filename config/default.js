@@ -9,7 +9,7 @@ module.exports = {
   },
   'front-end-host': 'https://www.rakki.fun:30689',
   'base-path': '/libra',
-  port: 5002,
+  port: 5000,
   sign: {
     secret: 'secret',
     exception: [/^\/oauthcb$/],
