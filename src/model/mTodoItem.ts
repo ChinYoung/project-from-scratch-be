@@ -14,6 +14,12 @@ export enum TODO_STATE {
   DONE,
   EXPIRED,
 }
+
+export const STATE_MAP = {
+  [TODO_STATE.CREATED]: 'CREATED',
+  [TODO_STATE.DONE]: 'DONE',
+  [TODO_STATE.EXPIRED]: 'EXPIRED',
+};
 export class TodoItem extends Model<InferAttributes<TodoItem>, InferCreationAttributes<TodoItem>> {
   declare id: CreationOptional<number>;
   declare todo_id: CreationOptional<string>;
