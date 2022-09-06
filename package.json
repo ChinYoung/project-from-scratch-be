@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "serve": "nodemon --config ./nodemon.json --exec ts-node ./src/app.ts",
+    "qa": "export NODE_ENV=qa && nodemon --config ./nodemon.json --exec ts-node ./src/app.ts",
     "build": "tsc && node built/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
