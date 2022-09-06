@@ -2,7 +2,7 @@ import { generateSig } from '../src/utils/sign';
 import { tzDayjs } from '../src/utils/time';
 
 const input = {
-  content: 'test insert',
+  content: `${Math.random().toString(36).slice(-8)}${Math.random().toString(36).slice(-8)}`,
   start_time: tzDayjs().format(),
   end_time: tzDayjs().format(),
   timestamp: parseInt(`${tzDayjs().valueOf() * 0.001}`),
