@@ -1,43 +1,44 @@
-import config from "config";
-import {createHash} from "crypto";
+import config from 'config';
+import { createHash } from 'crypto';
 
-export function generateSig(input:Object, secret: string):string {
-  const str = formatObject(input)
-  console.log("🚀 ~ file: sign.ts ~ line 6 ~ generateSig ~ str", str)
-  const md5 = createHash('md5')
-  md5.update(`${str}${secret}`)
-  return md5.digest('base64')
+export function generateSig(input: Object, secret: string): string {
+  const str = formatObject(input);
+  console.log('🚀 ~ file: sign.ts ~ line 6 ~ generateSig ~ str', str);
+  console.log('/n');
+  const md5 = createHash('md5');
+  md5.update(`${str}${secret}`);
+  return md5.digest('base64');
 }
 
-function formatObject(input:Object):string {
-  const params = Object.entries(input)
+function formatObject(input: Object): string {
+  const params = Object.entries(input);
   const str = params
     .filter(([key, value]) => value != undefined && key !== 'sig')
-    .map(function([key, value]) {
+    .map(function ([key, value]) {
       if (Array.isArray(value)) {
-        return `${key}=${formatArray(value)}`
+        return `${key}=${formatArray(value)}`;
       }
       if (typeof value === 'object') {
-        return `${key}=${formatObject(value)}`
+        return `${key}=${formatObject(value)}`;
       }
-      return `${key}=${value}`
+      return `${key}=${value}`;
     })
     .sort()
-    .join('&')
-  return `{${str}}`
+    .join('&');
+  return `{${str}}`;
 }
 
-function formatArray(input: any[]):string {
+function formatArray(input: any[]): string {
   const str = input
-    .map(function(item) {
+    .map(function (item) {
       if (Array.isArray(item)) {
-        return formatArray(item)
+        return formatArray(item);
       }
       if (typeof item === 'object') {
-        return formatObject(item)
+        return formatObject(item);
       }
-      return item
+      return item;
     })
-    .join(',')
-  return `[${str}]`
+    .join(',');
+  return `[${str}]`;
 }

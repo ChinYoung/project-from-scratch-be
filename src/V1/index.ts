@@ -1,4 +1,4 @@
-import { Context, Next } from 'koa';
+import { Next } from 'koa';
 import Router from 'koa-router';
 import JWT from 'jsonwebtoken';
 import config from 'config';
@@ -6,13 +6,14 @@ import { Account } from '../model/mAccount';
 import { Redis } from '../utils/database';
 import { User } from '../model/mUser';
 import { v4 as uuidV4 } from 'uuid';
-import { tUser } from './user';
+import { tUser } from '../types/user';
 import { HttpException } from '../utils/HttpException';
 import axios from 'axios';
-import { STATE_MAP, TodoItem } from '../model/mTodoItem';
+import { STATE_MAP, TodoItem, TODO_STATE } from '../model/mTodoItem';
+import { Ctx } from '../types/Context';
 
 export const router = new Router({ prefix: '/libra' });
-router.post('/account', async (ctx: Context, next: Next) => {
+router.post('/account', async (ctx: Ctx, next: Next) => {
   const { account, password }: { account: string; password: string } = ctx.request.body;
   const count = await Account.count({
     where: { account_name: account, password },
@@ -38,7 +39,7 @@ router.post('/account', async (ctx: Context, next: Next) => {
   await next();
 });
 
-router.get('/user', async (ctx: Context, next: Next) => {
+router.get('/user', async (ctx: Ctx, next: Next) => {
   const { pageSize, pageNumber } = ctx.request.query as { pageSize: string; pageNumber: string };
   const userList = await User.findAndCountAll({
     limit: Math.abs(parseInt(pageSize)),
@@ -56,7 +57,7 @@ router.get('/user', async (ctx: Context, next: Next) => {
   await next();
 });
 
-router.post('/user', async (ctx: Context, next: Next) => {
+router.post('/user', async (ctx: Ctx, next: Next) => {
   const { newUser } = ctx.request.body as { newUser: tUser };
   console.log('🚀 ~ file: index.ts ~ line 63 ~ router.post ~ newUser', newUser);
   try {
@@ -84,7 +85,7 @@ router.post('/user', async (ctx: Context, next: Next) => {
   }
 });
 
-router.get('/oauthcb', async (ctx: Context, next: Next) => {
+router.get('/oauthcb', async (ctx: Ctx, next: Next) => {
   const { code, state } = ctx.request.query as { code: string; state: string };
   const res = await axios.post(
     'https://github.com/login/oauth/access_token',
@@ -143,7 +144,8 @@ router.get('/oauthcb', async (ctx: Context, next: Next) => {
   await next();
 });
 
-router.get('/todo', async (ctx: Context, next: Next) => {
+// 查询列表
+router.get('/todo', async (ctx: Ctx, next: Next) => {
   const { account } = ctx;
   const { pageSize, pageNumber } = ctx.request.query as { pageSize: string; pageNumber: string };
   const todoItemRes = await TodoItem.findAndCountAll({
@@ -165,8 +167,8 @@ router.get('/todo', async (ctx: Context, next: Next) => {
   };
   await next();
 });
-
-router.get('/todo/:id', async (ctx: Context, next: Next) => {
+// 根据 id 查询详情
+router.get('/todo/:id', async (ctx: Ctx, next: Next) => {
   const { account } = ctx;
   const { id } = ctx.params as { id: number };
   const res: TodoItem = await TodoItem.findOne({ where: { todo_id: id, owner: account } });
@@ -184,9 +186,36 @@ router.get('/todo/:id', async (ctx: Context, next: Next) => {
   };
   await next();
 });
+// 新增
+router.post('/todo', async (ctx: Ctx, next: Next) => {
+  const { account } = ctx;
+  const { content, start_time, end_time } = ctx.request.body as TodoItem;
+  try {
+    await TodoItem.create({
+      content,
+      start_time,
+      end_time,
+      owner: account,
+      state: TODO_STATE.CREATED,
+    });
+    ctx.body = {
+      code: 0,
+      message: 'success',
+    };
+    await next();
+  } catch (error) {
+    console.table({
+      error: error.constructor?.name || 'Error',
+      method: 'post',
+      path: '/todo',
+      message: error.message,
+    });
+    throw new HttpException(10010, 'insert error');
+  }
+});
 
-router.post('/todo', async (ctx: Context, next: Next) => {});
-router.delete('/todo/:id', async (ctx: Context, next: Next) => {});
+// 删除
+router.delete('/todo/:id', async (ctx: Ctx, next: Next) => {});
 
 export default {
   routerV1: router,
