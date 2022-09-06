@@ -170,7 +170,7 @@ router.get('/todo', async (ctx: Ctx, next: Next) => {
 // 根据 id 查询详情
 router.get('/todo/:id', async (ctx: Ctx, next: Next) => {
   const { account } = ctx;
-  const { id } = ctx.params as { id: number };
+  const { id } = ctx.params as { id: string };
   const res: TodoItem = await TodoItem.findOne({ where: { todo_id: id, owner: account } });
   const { content, end_time, start_time, state, todo_id } = res;
   ctx.body = {
@@ -215,7 +215,31 @@ router.post('/todo', async (ctx: Ctx, next: Next) => {
 });
 
 // 删除
-router.delete('/todo/:id', async (ctx: Ctx, next: Next) => {});
+router.delete('/todo/:id', async (ctx: Ctx, next: Next) => {
+  const { account } = ctx;
+  const { id } = ctx.params as { id: string };
+  try {
+    await TodoItem.destroy({
+      where: {
+        todo_id: id,
+        owner: account,
+      },
+    });
+    ctx.body = {
+      code: 0,
+      message: 'success',
+    };
+    await next();
+  } catch (error) {
+    console.table({
+      error: error.constructor?.name || 'Error',
+      method: 'delete',
+      path: '/todo',
+      message: error.message,
+    });
+    throw new HttpException(10011, 'delete error');
+  }
+});
 
 export default {
   routerV1: router,
