@@ -9,18 +9,14 @@ module.exports = {
   },
   'front-end-host': 'https://www.rakki.fun:30689',
   'base-path': '/libra',
-  port: 5000,
+  port: 5002,
   sign: {
     secret: 'secret',
-    exception: [
-      /^\/oauthcb$/,
-    ],
+    exception: [/^\/oauthcb$/],
   },
   jwt: {
     secret: 'jwt-secret',
-    exception: [
-      /^\/account$/,
-    ],
+    exception: [/^\/account$/],
   },
   redis: {
     password: 'libraredis',
