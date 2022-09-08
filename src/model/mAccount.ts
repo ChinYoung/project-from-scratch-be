@@ -1,6 +1,13 @@
-import { CreationOptional, InferAttributes, InferCreationAttributes, Model, INTEGER, STRING } from 'sequelize';
+import {
+  CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  INTEGER,
+  STRING,
+  Sequelize,
+} from 'sequelize';
 import { v4 as uuidV4 } from 'uuid';
-import { SequelizeInstance } from './initiate';
 export class Account extends Model<InferAttributes<Account>, InferCreationAttributes<Account>> {
   declare id: CreationOptional<number>;
   declare account_id: CreationOptional<string>;
@@ -10,7 +17,7 @@ export class Account extends Model<InferAttributes<Account>, InferCreationAttrib
   declare avatar: CreationOptional<string>;
 }
 
-export function initAccount(sequelize: SequelizeInstance) {
+export function initAccount(sequelize: Sequelize) {
   Account.init(
     {
       account_id: { type: new STRING(128), allowNull: false, defaultValue: () => uuidV4() },

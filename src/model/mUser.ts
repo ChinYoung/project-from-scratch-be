@@ -1,5 +1,13 @@
-import { CreationOptional, InferAttributes, InferCreationAttributes, INTEGER, JSON, Model, STRING } from 'sequelize';
-import { SequelizeInstance } from './initiate';
+import {
+  CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+  INTEGER,
+  JSON,
+  Model,
+  Sequelize,
+  STRING,
+} from 'sequelize';
 
 type Address = {
   province: string;
@@ -19,7 +27,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare address: CreationOptional<Address>;
 }
 
-export function initUser(sequelize: SequelizeInstance) {
+export function initUser(sequelize: Sequelize) {
   User.init(
     {
       id: { type: INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },

@@ -2,7 +2,7 @@
   "name": "project-from-scratch-be",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/app.ts",
   "scripts": {
     "serve": "nodemon --config ./nodemon.json --exec ts-node ./src/app.ts",
     "qa": "export NODE_ENV=qa && nodemon --config ./nodemon.json --exec ts-node ./src/app.ts",
@@ -17,6 +17,8 @@
     "axios": "^0.27.2",
     "config": "^3.3.7",
     "dayjs": "^1.11.4",
+    "fp-ts": "^2.12.3",
+    "io-ts": "^2.2.18",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
@@ -30,6 +32,7 @@
   "devDependencies": {
     "@babel/core": "^7.19.0",
     "@babel/preset-env": "^7.19.0",
+    "@babel/preset-typescript": "^7.18.6",
     "@types/node": "^18.7.15",
     "@types/validator": "^13.7.6",
     "@typescript-eslint/eslint-plugin": "^5.36.2",

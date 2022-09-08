@@ -5,10 +5,10 @@ import {
   UUID,
   DATE,
   Model,
-  Sequelize,
   CreationOptional,
   InferAttributes,
   InferCreationAttributes,
+  Sequelize,
 } from 'sequelize';
 
 export enum TODO_STATE {

@@ -11,6 +11,9 @@ import { HttpException } from '../utils/HttpException';
 import axios from 'axios';
 import { STATE_MAP, TodoItem, TODO_STATE } from '../model/mTodoItem';
 import { Ctx } from '../types/Context';
+import * as T from 'io-ts';
+import { PathReporter } from 'io-ts/PathReporter';
+import { isRight } from 'fp-ts/lib/Either';
 
 export const router = new Router({ prefix: '/libra' });
 router.post('/account', async (ctx: Ctx, next: Next) => {
@@ -217,23 +220,36 @@ router.post('/todo', async (ctx: Ctx, next: Next) => {
 // 修改
 router.post('/todo/:id', async (ctx: Ctx, next: Next) => {
   const { account } = ctx;
-  const { id } = ctx.params as { id: string };
-  interface UpdateInput {
-    todo_id: string;
-    content?: string;
-    start_time?: string;
-    end_time?: string;
-    state?: number;
+  const { id: todo_id } = ctx.params as { id: string };
+  const InputType = T.partial({
+    content: T.string,
+    start_time: T.string,
+    end_time: T.string,
+    state: T.number,
+  });
+  const res = InputType.decode(ctx.request.body);
+  if (!isRight(res)) {
+    ctx.body = {
+      code: 30002,
+      message: 'invalid content',
+      data: {
+        error: PathReporter.report(res),
+      },
+    };
+    await next();
+    return;
   }
-  const input: UpdateInput = ctx.request.body;
-  const { todo_id, content, start_time, end_time, state } = input;
+  type Input = T.TypeOf<typeof InputType>;
+  const input: Input = ctx.request.body;
+  const { content, start_time, end_time, state } = input;
   try {
     const count = await TodoItem.count({
       where: {
         owner: account,
-        id,
+        todo_id,
       },
     });
+    console.log('🚀 ~ file: index.ts ~ line 252 ~ router.post ~ count', count);
     if (!count) {
       ctx.body = {
         code: 30001,
@@ -254,6 +270,7 @@ router.post('/todo/:id', async (ctx: Ctx, next: Next) => {
     };
     await next();
   } catch (error) {
+    console.log('🚀 ~ file: index.ts ~ line 261 ~ router.post ~ error', error);
     console.table({
       error: error.constructor?.name || 'Error',
       method: 'post',
