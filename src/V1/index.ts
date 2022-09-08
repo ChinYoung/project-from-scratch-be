@@ -214,6 +214,56 @@ router.post('/todo', async (ctx: Ctx, next: Next) => {
   }
 });
 
+// 修改
+router.post('/todo/:id', async (ctx: Ctx, next: Next) => {
+  const { account } = ctx;
+  const { id } = ctx.params as { id: string };
+  interface UpdateInput {
+    todo_id: string;
+    content?: string;
+    start_time?: string;
+    end_time?: string;
+    state?: number;
+  }
+  const input: UpdateInput = ctx.request.body;
+  const { todo_id, content, start_time, end_time, state } = input;
+  try {
+    const count = await TodoItem.count({
+      where: {
+        owner: account,
+        id,
+      },
+    });
+    if (!count) {
+      ctx.body = {
+        code: 30001,
+        message: 'item does not exist',
+      };
+      await next();
+      return;
+    }
+    await TodoItem.update(
+      Object.fromEntries(Object.entries({ content, start_time, end_time, state }).filter(([, v]) => v !== undefined)),
+      {
+        where: { owner: account, todo_id },
+      },
+    );
+    ctx.body = {
+      code: 0,
+      message: 'success',
+    };
+    await next();
+  } catch (error) {
+    console.table({
+      error: error.constructor?.name || 'Error',
+      method: 'post',
+      path: '/todo',
+      message: error.message,
+    });
+    throw new HttpException(10010, 'insert error');
+  }
+});
+
 // 删除
 router.delete('/todo/:id', async (ctx: Ctx, next: Next) => {
   const { account } = ctx;

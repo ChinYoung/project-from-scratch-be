@@ -26,8 +26,8 @@ export class TodoItem extends Model<InferAttributes<TodoItem>, InferCreationAttr
   declare id: CreationOptional<number>;
   declare todo_id: CreationOptional<string>;
   declare owner: string;
-  declare state: TODO_STATE;
-  declare content: string;
+  declare state: CreationOptional<TODO_STATE>;
+  declare content: CreationOptional<string>;
   declare start_time: CreationOptional<string>;
   declare end_time: CreationOptional<string>;
 }
