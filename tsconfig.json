@@ -5,6 +5,7 @@
     "target": "ES6",
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "moduleResolution": "Node"
   },
   "include": [
     "./src"
