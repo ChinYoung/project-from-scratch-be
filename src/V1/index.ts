@@ -140,9 +140,14 @@ router.get('/oauthcb', async (ctx: Ctx, next: Next) => {
     await account.save();
   }
   const jwtSecret: string = config.get('jwt.secret');
-  const userData = { id: account.account_id, name: account.account_name, avatar: account.avatar };
+  const userData = {
+    account: account.account_id,
+    id: account.account_id,
+    name: account.account_name,
+    avatar: account.avatar,
+  };
   const token = JWT.sign(userData, jwtSecret, { expiresIn: 60 * 60 });
-  redis.current.set(`jwt:token:${id}`, token);
+  redis.current.set(`jwt:token:${account.account_id}`, token);
   ctx.redirect(`${config.get('front-end-host')}${config.get('base-path')}/?token=${token}`);
   await next();
 });
